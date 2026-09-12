@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="GameZone - Play fun and exciting browser games online.">
+
+    <title>GameZone | Play. Compete. Have Fun.</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            <span class="logo-icon">🎮</span>
+            <span>Game<span>Zone</span></span>
+        </div>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#games">Games</a>
+            <a href="#about">About</a>
+        </nav>
+
+        <button class="nav-play-btn" onclick="scrollToGames()">
+            Play Now
+        </button>
+
+    </header>
+
+
+    <!-- ================= HERO SECTION ================= -->
+
+    <section class="hero" id="home">
+
+        <div class="hero-content">
+
+            <p class="hero-small-title">
+                🎮 WELCOME TO GAMEZONE
+            </p>
+
+            <h1>
+                PLAY.
+                <span>COMPETE.</span>
+                HAVE FUN.
+            </h1>
+
+            <p class="hero-description">
+                Discover exciting browser games, challenge yourself,
+                beat your high score and unlock new levels.
+            </p>
+
+            <div class="hero-buttons">
+
+                <button class="primary-btn" onclick="scrollToGames()">
+                    🚀 Explore Games
+                </button>
+
+                <button class="secondary-btn" onclick="showRandomGame()">
+                    🎲 Random Game
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-game-box">
+
+            <div class="floating-icon icon-1">🎮</div>
+            <div class="floating-icon icon-2">🏆</div>
+            <div class="floating-icon icon-3">⭐</div>
+            <div class="floating-icon icon-4">🔥</div>
+
+            <div class="game-controller">
+                🎮
+            </div>
+
+            <div class="hero-circle circle-1"></div>
+            <div class="hero-circle circle-2"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= STATS ================= -->
+
+    <section class="stats">
+
+        <div class="stat-box">
+            <h2>10+</h2>
+            <p>Games</p>
+        </div>
+
+        <div class="stat-box">
+            <h2>∞</h2>
+            <p>Fun</p>
+        </div>
+
+        <div class="stat-box">
+            <h2>4+</h2>
+            <p>Levels</p>
+        </div>
+
+        <div class="stat-box">
+            <h2>100%</h2>
+            <p>Free</p>
+        </div>
+
+    </section>
+
+
+    <!-- ================= GAMES SECTION ================= -->
+
+    <section class="games-section" id="games">
+
+        <div class="section-heading">
+
+            <p>OUR COLLECTION</p>
+
+            <h2>
+                Choose Your <span>Game</span>
+            </h2>
+
+            <p class="section-description">
+                Pick a game and start playing. More games will be
+                added soon.
+            </p>
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <div class="game-controls">
+
+            <div class="search-box">
+
+                <span>🔍</span>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search games..."
+                    onkeyup="searchGames()">
+
+            </div>
+
+
+            <!-- CATEGORY FILTER -->
+
+            <div class="filter-buttons">
+
+                <button class="filter-btn active"
+                    onclick="filterGames('all', this)">
+                    All
+                </button>
+
+                <button class="filter-btn"
+                    onclick="filterGames('arcade', this)">
+                    Arcade
+                </button>
+
+                <button class="filter-btn"
+                    onclick="filterGames('puzzle', this)">
+                    Puzzle
+                </button>
+
+                <button class="filter-btn"
+                    onclick="filterGames('classic', this)">
+                    Classic
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= GAME CARDS ================= -->
+
+        <div class="games-grid" id="gamesGrid">
+
+
+            <!-- GAME 1 -->
+
+            <div class="game-card"
+                data-category="arcade"
+                data-name="Snake">
+
+                <div class="game-image snake-bg">
+                    🐍
+                    <span class="game-badge">POPULAR</span>
+                </div>
+
+                <div class="game-info">
+
+                    <h3>Snake</h3>
+
+                    <p>
+                        Eat, grow and survive as long as possible.
+                    </p>
+
+                    <div class="game-bottom">
+
+                        <span>⭐ Arcade</span>
+
+                        <button onclick="openGame('snake.html')">
+                            Play →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- GAME 2 -->
+
+            <div class="game-card"
+                data-category="classic"
+                data-name="Tic Tac Toe">
+
+                <div class="game-image tic-bg">
+                    ❌⭕
+                </div>
+
+                <div class="game-info">
+
+                    <h3>Tic Tac Toe</h3>
+
+                    <p>
+                        Challenge your opponent and get three in a row.
+                    </p>
+
+                    <div class="game-bottom">
+
+                        <span>⭐ Classic</span>
+
+                        <button onclick="openGame('tic-tac-toe.html')">
+                            Play →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- GAME 3 -->
+
+            <div class="game-card"
+                data-category="puzzle"
+                data-name="Memory Cards">
+
+                <div class="game-image memory-bg">
+                    🧠
+                </div>
+
+                <div class="game-info">
+
+                    <h3>Memory Cards</h3>
+
+                    <p>
+                        Test your memory and find matching cards.
+                    </p>
+
+                    <div class="game-bottom">
+
+                        <span>⭐ Puzzle</span>
+
+                        <button onclick="openGame('memory.html')">
+                            Play →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- GAME 4 -->
+
+            <div class="game-card"
+                data-category="arcade"
+                data-name="Brick Breaker">
+
+                <div class="game-image brick-bg">
+                    🧱
+                </div>
+
+                <div class="game-info">
+
+                    <h3>Brick Breaker</h3>
+
+                    <p>
+                        Break all the bricks and beat the level.
+                    </p>
+
+                    <div class="game-bottom">
+
+                        <span>⭐ Arcade</span>
+
+                        <button onclick="openGame('brick-breaker.html')">
+                            Play →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- GAME 5 -->
+
+            <div class="game-card"
+                data-category="classic"
+                data-name="Rock Paper Scissors">
+
+                <div class="game-image rps-bg">
+                    ✊
+                </div>
+
+                <div class="game-info">
+
+                    <h3>Rock Paper Scissors</h3>
+
+                    <p>
+                        Choose your move and defeat your opponent.
+                    </p>
+
+                    <div class="game-bottom">
+
+                        <span>⭐ Classic</span>
+
+                        <button onclick="openGame('rock-paper-scissors.html')">
+                            Play →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- GAME 6 -->
+
+            <div class="game-card"
+                data-category="puzzle"
+                data-name="2048">
+
+                <div class="game-image game2048-bg">
+                    2048
+                </div>
+
+                <div class="game-info">
+
+                    <h3>2048</h3>
+
+                    <p>
+                        Combine numbers and reach the 2048 tile.
+                    </p>
+
+                    <div class="game-bottom">
+
+                        <span>⭐ Puzzle</span>
+
+                        <button onclick="openGame('2048.html')">
+                            Play →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- GAME 7 -->
+
+            <div class="game-card"
+                data-category="arcade"
+                data-name="Car Dodge">
+
+                <div class="game-image car-bg">
+                    🚗
+                </div>
+
+                <div class="game-info">
+
+                    <h3>Car Dodge</h3>
+
+                    <p>
+                        Dodge incoming cars and survive the road.
+                    </p>
+
+                    <div class="game-bottom">
+
+                        <span>⭐ Arcade</span>
+
+                        <button onclick="openGame('car-dodge.html')">
+                            Play →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- GAME 8 -->
+
+            <div class="game-card"
+                data-category="puzzle"
+                data-name="Number Guess">
+
+                <div class="game-image number-bg">
+                    🔢
+                </div>
+
+                <div class="game-info">
+
+                    <h3>Number Guess</h3>
+
+                    <p>
+                        Guess the hidden number using clues.
+                    </p>
+
+                    <div class="game-bottom">
+
+                        <span>⭐ Puzzle</span>
+
+                        <button onclick="openGame('number-guess.html')">
+                            Play →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- GAME 9 -->
+
+            <div class="game-card"
+                data-category="arcade"
+                data-name="Flappy Bird">
+
+                <div class="game-image flappy-bg">
+                    🐦
+                </div>
+
+                <div class="game-info">
+
+                    <h3>Flappy Bird</h3>
+
+                    <p>
+                        Fly through the pipes and beat your score.
+                    </p>
+
+                    <div class="game-bottom">
+
+                        <span>⭐ Arcade</span>
+
+                        <button onclick="openGame('flappy.html')">
+                            Play →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- GAME 10 -->
+
+            <div class="game-card"
+                data-category="classic"
+                data-name="Ping Pong">
+
+                <div class="game-image pong-bg">
+                    🏓
+                </div>
+
+                <div class="game-info">
+
+                    <h3>Ping Pong</h3>
+
+                    <p>
+                        Return the ball and defeat your opponent.
+                    </p>
+
+                    <div class="game-bottom">
+
+                        <span>⭐ Classic</span>
+
+                        <button onclick="openGame('ping-pong.html')">
+                            Play →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- NO RESULT MESSAGE -->
+
+        <div id="noResults" class="no-results">
+
+            😕
+            <h3>No games found</h3>
+
+            <p>
+                Try searching for another game.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= ABOUT ================= -->
+
+    <section class="about-section" id="about">
+
+        <div class="about-content">
+
+            <p class="about-small">
+                ABOUT GAMEZONE
+            </p>
+
+            <h2>
+                One Website.
+                <span>Many Games.</span>
+            </h2>
+
+            <p>
+                GameZone is a browser gaming platform where you can
+                play different games without installing anything.
+                Challenge yourself, improve your scores and unlock
+                new levels.
+            </p>
+
+            <button class="primary-btn" onclick="scrollToGames()">
+                Start Playing 🎮
+            </button>
+
+        </div>
+
+
+        <div class="about-visual">
+
+            <div class="about-card card-one">
+                🏆
+                <span>High Scores</span>
+            </div>
+
+            <div class="about-card card-two">
+                🔥
+                <span>Levels</span>
+            </div>
+
+            <div class="about-card card-three">
+                ⭐
+                <span>Achievements</span>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <div class="footer-logo">
+            🎮 GameZone
+        </div>
+
+        <p>
+            Play. Compete. Have Fun.
+        </p>
+
+        <div class="footer-links">
+
+            <a href="#home">Home</a>
+            <a href="#games">Games</a>
+            <a href="#about">About</a>
+
+        </div>
+
+        <p class="copyright">
+            © 2026 GameZone. All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- ================= POPUP ================= -->
+
+    <div id="gamePopup" class="popup">
+
+        <div class="popup-content">
+
+            <button class="close-popup"
+                onclick="closePopup()">
+                ×
+            </button>
+
+            <div class="popup-icon">
+                🎮
+            </div>
+
+            <h2 id="popupTitle">
+                Coming Soon!
+            </h2>
+
+            <p id="popupMessage">
+                This game is currently being developed.
+            </p>
+
+            <button class="primary-btn"
+                onclick="closePopup()">
+                Got it
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

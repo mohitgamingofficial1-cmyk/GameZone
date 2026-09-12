@@ -1,0 +1,1084 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Memory Cards - 10 Levels</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0b1020;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-container {
+    width: 95%;
+    max-width: 650px;
+    text-align: center;
+    padding: 20px 0;
+}
+
+h1 {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #aaa;
+    margin-bottom: 18px;
+}
+
+.level-box {
+    background: #151d35;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.level-title {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.level-name {
+    color: #00e5ff;
+    margin-top: 5px;
+}
+
+.progress {
+    width: 100%;
+    height: 8px;
+    background: #252d45;
+    border-radius: 10px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 10%;
+    background: #00e5ff;
+    transition: 0.4s;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    background: #151d35;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.stats span {
+    display: block;
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.game-board {
+    display: grid;
+    gap: 10px;
+    margin: 20px auto;
+    width: min(90vw, 560px);
+}
+
+.card {
+    aspect-ratio: 1 / 1;
+    background: #202b4b;
+    border: 2px solid #35415f;
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.4s;
+}
+
+.card.flipped {
+    transform: rotateY(180deg);
+}
+
+.card.matched {
+    border-color: #00e5ff;
+}
+
+.card-front,
+.card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden;
+}
+
+.card-front {
+    background: #202b4b;
+    font-size: 30px;
+}
+
+.card-back {
+    background: #151d35;
+    transform: rotateY(180deg);
+    font-size: clamp(25px, 7vw, 48px);
+}
+
+.message {
+    min-height: 28px;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+button {
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 5px;
+}
+
+.new-game {
+    background: #00e5ff;
+    color: #071018;
+}
+
+.next-level {
+    background: #ff4fd8;
+    color: white;
+    display: none;
+}
+
+.home {
+    background: #293453;
+    color: white;
+}
+
+button:hover {
+    transform: scale(1.04);
+}
+
+.level-select {
+    margin: 10px 0;
+}
+
+select {
+    padding: 8px 15px;
+    border-radius: 7px;
+    background: #151d35;
+    color: white;
+    border: 1px solid #394565;
+}
+
+.lock-info {
+    font-size: 13px;
+    color: #999;
+    margin-top: 7px;
+}
+
+@media(max-width: 500px) {
+
+    h1 {
+        font-size: 30px;
+    }
+
+    .game-board {
+        gap: 7px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="game-container">
+
+    <h1>🧠 Memory Cards</h1>
+
+    <p class="subtitle">
+        Find all matching pairs and complete 10 levels!
+    </p>
+
+
+    <!-- LEVEL -->
+
+    <div class="level-box">
+
+        <div class="level-title">
+            Level <span id="levelNumber">1</span> / 10
+        </div>
+
+        <div class="level-name" id="levelName">
+            Beginner
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="lock-info" id="lockInfo">
+            Match all pairs to complete the level
+        </div>
+
+    </div>
+
+
+    <!-- STATS -->
+
+    <div class="stats">
+
+        <div>
+            Moves
+            <span id="moves">0</span>
+        </div>
+
+        <div>
+            Pairs
+            <span id="pairs">0</span>
+        </div>
+
+        <div>
+            Best
+            <span id="best">-</span>
+        </div>
+
+    </div>
+
+
+    <!-- LEVEL SELECT -->
+
+    <div class="level-select">
+
+        <label>Level: </label>
+
+        <select id="levelSelect" onchange="changeLevel()">
+
+            <option value="1">
+                Level 1 - Beginner
+            </option>
+
+            <option value="2" disabled>
+                Level 2 - Easy
+            </option>
+
+            <option value="3" disabled>
+                Level 3 - Easy+
+            </option>
+
+            <option value="4" disabled>
+                Level 4 - Normal
+            </option>
+
+            <option value="5" disabled>
+                Level 5 - Normal+
+            </option>
+
+            <option value="6" disabled>
+                Level 6 - Hard
+            </option>
+
+            <option value="7" disabled>
+                Level 7 - Hard+
+            </option>
+
+            <option value="8" disabled>
+                Level 8 - Expert
+            </option>
+
+            <option value="9" disabled>
+                Level 9 - Master
+            </option>
+
+            <option value="10" disabled>
+                Level 10 - Ultimate
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- GAME -->
+
+    <div
+        class="game-board"
+        id="gameBoard">
+    </div>
+
+
+    <div
+        class="message"
+        id="message">
+
+        Find the matching pairs!
+
+    </div>
+
+
+    <button
+        class="new-game"
+        onclick="newGame()">
+
+        🔄 Restart
+
+    </button>
+
+
+    <button
+        class="next-level"
+        id="nextLevelBtn"
+        onclick="nextLevel()">
+
+        ▶ Next Level
+
+    </button>
+
+
+    <br>
+
+
+    <button
+        class="home"
+        onclick="goHome()">
+
+        🏠 Home
+
+    </button>
+
+</div>
+
+
+<script>
+
+
+// =====================================
+// LEVEL INFORMATION
+// =====================================
+
+const levelNames = [
+
+    "",
+
+    "Beginner",
+    "Easy",
+    "Easy+",
+    "Normal",
+    "Normal+",
+    "Hard",
+    "Hard+",
+    "Expert",
+    "Master",
+    "Ultimate"
+
+];
+
+
+// Number of pairs for each level
+
+const levelPairs = [
+
+    0,
+
+    2,   // Level 1
+    3,   // Level 2
+    4,   // Level 3
+    5,   // Level 4
+    6,   // Level 5
+    7,   // Level 6
+    8,   // Level 7
+    9,   // Level 8
+    10,  // Level 9
+    12   // Level 10
+
+];
+
+
+// Emoji collection
+
+const emojis = [
+
+    "🍎",
+    "🍌",
+    "🍇",
+    "🍉",
+    "🍓",
+    "🍒",
+    "🥝",
+    "🍍",
+    "🥭",
+    "🍑",
+    "🍋",
+    "🥥",
+    "🌟",
+    "⭐",
+    "🔥",
+    "🚀",
+    "🎮",
+    "⚽",
+    "🏀",
+    "🎯"
+
+];
+
+
+// =====================================
+// VARIABLES
+// =====================================
+
+let currentLevel = 1;
+
+let cards = [];
+
+let firstCard = null;
+
+let secondCard = null;
+
+let lockBoard = false;
+
+let moves = 0;
+
+let matchedPairs = 0;
+
+let gameFinished = false;
+
+
+// =====================================
+// GET ELEMENTS
+// =====================================
+
+const gameBoard =
+    document.getElementById("gameBoard");
+
+const movesElement =
+    document.getElementById("moves");
+
+const pairsElement =
+    document.getElementById("pairs");
+
+const bestElement =
+    document.getElementById("best");
+
+const messageElement =
+    document.getElementById("message");
+
+
+// =====================================
+// CREATE GAME
+// =====================================
+
+function createGame() {
+
+    gameBoard.innerHTML = "";
+
+    cards = [];
+
+    firstCard = null;
+
+    secondCard = null;
+
+    lockBoard = false;
+
+    moves = 0;
+
+    matchedPairs = 0;
+
+    gameFinished = false;
+
+
+    movesElement.textContent = "0";
+
+    pairsElement.textContent = "0";
+
+
+    const pairs =
+        levelPairs[currentLevel];
+
+
+    // Create pairs
+
+    let selectedEmojis =
+        emojis.slice(0, pairs);
+
+
+    let cardValues = [
+        ...selectedEmojis,
+        ...selectedEmojis
+    ];
+
+
+    // Shuffle
+
+    cardValues = shuffle(cardValues);
+
+
+    // Determine grid columns
+
+    if(cardValues.length <= 6) {
+
+        gameBoard.style.gridTemplateColumns =
+            "repeat(3, 1fr)";
+
+    }
+    else if(cardValues.length <= 12) {
+
+        gameBoard.style.gridTemplateColumns =
+            "repeat(4, 1fr)";
+
+    }
+    else {
+
+        gameBoard.style.gridTemplateColumns =
+            "repeat(5, 1fr)";
+
+    }
+
+
+    // Create cards
+
+    cardValues.forEach((value, index) => {
+
+        const card =
+            document.createElement("div");
+
+        card.classList.add("card");
+
+        card.dataset.value = value;
+
+
+        card.innerHTML = `
+
+            <div class="card-front">
+                ?
+            </div>
+
+            <div class="card-back">
+                ${value}
+            </div>
+
+        `;
+
+
+        card.addEventListener(
+            "click",
+            () => flipCard(card)
+        );
+
+
+        gameBoard.appendChild(card);
+
+        cards.push(card);
+
+    });
+
+
+    messageElement.textContent =
+        "Find the matching pairs!";
+
+
+    updateBestScore();
+
+}
+
+
+// =====================================
+// SHUFFLE
+// =====================================
+
+function shuffle(array) {
+
+    let result = [...array];
+
+    for(
+        let i = result.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(Math.random() * (i + 1));
+
+        [
+            result[i],
+            result[j]
+        ] = [
+            result[j],
+            result[i]
+        ];
+
+    }
+
+    return result;
+}
+
+
+// =====================================
+// FLIP CARD
+// =====================================
+
+function flipCard(card) {
+
+    if(lockBoard) return;
+
+    if(gameFinished) return;
+
+    if(card === firstCard) return;
+
+    if(card.classList.contains("matched")) {
+        return;
+    }
+
+
+    card.classList.add("flipped");
+
+
+    if(!firstCard) {
+
+        firstCard = card;
+
+        return;
+    }
+
+
+    secondCard = card;
+
+    moves++;
+
+    movesElement.textContent =
+        moves;
+
+
+    checkMatch();
+
+}
+
+
+// =====================================
+// CHECK MATCH
+// =====================================
+
+function checkMatch() {
+
+    const isMatch =
+        firstCard.dataset.value ===
+        secondCard.dataset.value;
+
+
+    if(isMatch) {
+
+        matched();
+
+    }
+    else {
+
+        unflipCards();
+
+    }
+
+}
+
+
+// =====================================
+// MATCHED
+// =====================================
+
+function matched() {
+
+    firstCard.classList.add("matched");
+
+    secondCard.classList.add("matched");
+
+
+    matchedPairs++;
+
+
+    pairsElement.textContent =
+        matchedPairs;
+
+
+    resetTurn();
+
+
+    const totalPairs =
+        levelPairs[currentLevel];
+
+
+    if(matchedPairs === totalPairs) {
+
+        finishLevel();
+
+    }
+
+}
+
+
+// =====================================
+// UNFLIP
+// =====================================
+
+function unflipCards() {
+
+    lockBoard = true;
+
+
+    setTimeout(() => {
+
+        firstCard.classList.remove("flipped");
+
+        secondCard.classList.remove("flipped");
+
+
+        resetTurn();
+
+    }, getDelay());
+
+}
+
+
+// =====================================
+// DELAY
+// =====================================
+
+function getDelay() {
+
+    // Higher level = faster
+
+    const delay =
+        900 - (currentLevel * 50);
+
+
+    return Math.max(450, delay);
+
+}
+
+
+// =====================================
+// RESET TURN
+// =====================================
+
+function resetTurn() {
+
+    [
+        firstCard,
+        secondCard
+    ] = [
+        null,
+        null
+    ];
+
+    lockBoard = false;
+
+}
+
+
+// =====================================
+// FINISH LEVEL
+// =====================================
+
+function finishLevel() {
+
+    gameFinished = true;
+
+
+    saveBestScore();
+
+
+    if(currentLevel === 10) {
+
+        messageElement.textContent =
+            "🏆 AMAZING! You completed ALL 10 LEVELS!";
+
+        document.getElementById(
+            "lockInfo"
+        ).textContent =
+            "🎉 Game Master!";
+
+        return;
+
+    }
+
+
+    messageElement.textContent =
+        "🎉 Level Complete!";
+
+
+    const next =
+        currentLevel + 1;
+
+
+    unlockLevel(next);
+
+
+    document.getElementById(
+        "nextLevelBtn"
+    ).style.display =
+        "inline-block";
+
+
+    document.getElementById(
+        "lockInfo"
+    ).textContent =
+        "Level " + next + " unlocked!";
+
+}
+
+
+// =====================================
+// UNLOCK LEVEL
+// =====================================
+
+function unlockLevel(level) {
+
+    const select =
+        document.getElementById("levelSelect");
+
+
+    if(level <= 10) {
+
+        select.options[level - 1]
+            .disabled = false;
+
+    }
+
+
+    localStorage.setItem(
+        "memoryUnlocked",
+        level
+    );
+
+}
+
+
+// =====================================
+// NEXT LEVEL
+// =====================================
+
+function nextLevel() {
+
+    if(currentLevel >= 10) return;
+
+
+    currentLevel++;
+
+
+    document.getElementById(
+        "levelSelect"
+    ).value = currentLevel;
+
+
+    updateLevelUI();
+
+    createGame();
+
+}
+
+
+// =====================================
+// CHANGE LEVEL
+// =====================================
+
+function changeLevel() {
+
+    const selected =
+        Number(
+            document.getElementById(
+                "levelSelect"
+            ).value
+        );
+
+
+    currentLevel = selected;
+
+
+    updateLevelUI();
+
+    createGame();
+
+}
+
+
+// =====================================
+// UPDATE LEVEL UI
+// =====================================
+
+function updateLevelUI() {
+
+    document.getElementById(
+        "levelNumber"
+    ).textContent =
+        currentLevel;
+
+
+    document.getElementById(
+        "levelName"
+    ).textContent =
+        levelNames[currentLevel];
+
+
+    document.getElementById(
+        "progressBar"
+    ).style.width =
+        (currentLevel * 10) + "%";
+
+
+    document.getElementById(
+        "lockInfo"
+    ).textContent =
+        "Match all pairs to complete the level";
+
+}
+
+
+// =====================================
+// BEST SCORE
+// =====================================
+
+function getBestKey() {
+
+    return "memoryBest_" +
+        currentLevel;
+
+}
+
+
+function updateBestScore() {
+
+    const best =
+        localStorage.getItem(
+            getBestKey()
+        );
+
+
+    bestElement.textContent =
+        best ? best : "-";
+
+}
+
+
+function saveBestScore() {
+
+    const key =
+        getBestKey();
+
+
+    const oldBest =
+        Number(
+            localStorage.getItem(key)
+        );
+
+
+    if(!oldBest || moves < oldBest) {
+
+        localStorage.setItem(
+            key,
+            moves
+        );
+
+    }
+
+
+    updateBestScore();
+
+}
+
+
+// =====================================
+// LOAD PROGRESS
+// =====================================
+
+function loadProgress() {
+
+    const unlocked =
+        Number(
+            localStorage.getItem(
+                "memoryUnlocked"
+            )
+        ) || 1;
+
+
+    const select =
+        document.getElementById(
+            "levelSelect"
+        );
+
+
+    for(
+        let i = 1;
+        i <= unlocked;
+        i++
+    ) {
+
+        select.options[i - 1]
+            .disabled = false;
+
+    }
+
+
+    currentLevel =
+        Math.min(unlocked, 10);
+
+
+    select.value =
+        currentLevel;
+
+}
+
+
+// =====================================
+// NEW GAME
+// =====================================
+
+function newGame() {
+
+    updateLevelUI();
+
+    createGame();
+
+}
+
+
+// =====================================
+// HOME
+// =====================================
+
+function goHome() {
+
+    window.location.href =
+        "../index.html";
+
+}
+
+
+// =====================================
+// START GAME
+// =====================================
+
+loadProgress();
+
+updateLevelUI();
+
+createGame();
+
+</script>
+
+</body>
+</html>
+```

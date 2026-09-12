@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Number Guess - GameZone</title>
+
+<style>
+body{
+    margin:0;
+    background:#111827;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
+
+h1{color:#38bdf8}
+
+.box{
+    max-width:550px;
+    margin:30px auto;
+    padding:30px;
+    background:#1e293b;
+    border-radius:15px;
+}
+
+.info{
+    display:flex;
+    justify-content:center;
+    gap:25px;
+    flex-wrap:wrap;
+    margin:15px;
+}
+
+input{
+    width:180px;
+    padding:13px;
+    font-size:18px;
+    border-radius:8px;
+    border:0;
+    text-align:center;
+}
+
+button{
+    padding:11px 18px;
+    margin:6px;
+    border:0;
+    border-radius:8px;
+    background:#38bdf8;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#message{
+    min-height:35px;
+    font-size:20px;
+    margin:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔢 Number Guess</h1>
+
+<div class="box">
+
+<div class="info">
+    <div>Level: <b id="level">1</b></div>
+    <div>Attempts: <b id="attempts">5</b></div>
+    <div>Score: <b id="score">0</b></div>
+</div>
+
+<h2>Guess a number</h2>
+
+<p id="range">Between 1 and 10</p>
+
+<input
+    type="number"
+    id="guess"
+    placeholder="Enter number"
+>
+
+<br>
+
+<button onclick="checkGuess()">🎯 Guess</button>
+<button onclick="restart()">🔄 Restart</button>
+<button onclick="goHome()">🏠 Home</button>
+
+<button
+    id="nextBtn"
+    onclick="nextLevel()"
+    style="display:none"
+>
+▶ Next Level
+</button>
+
+<div id="message">
+    Good luck!
+</div>
+
+</div>
+
+<script>
+
+let level=1;
+let score=0;
+let attempts=0;
+let secret=0;
+let completed=false;
+
+const settings=[
+    {max:10,tries:5},
+    {max:20,tries:5},
+    {max:30,tries:5},
+    {max:40,tries:5},
+    {max:50,tries:5},
+    {max:75,tries:6},
+    {max:100,tries:6},
+    {max:150,tries:7},
+    {max:200,tries:7},
+    {max:500,tries:8}
+];
+
+function start(){
+
+    const s=settings[level-1];
+
+    secret=
+    Math.floor(Math.random()*s.max)+1;
+
+    attempts=s.tries;
+
+    completed=false;
+
+    document.getElementById("level").textContent=level;
+
+    document.getElementById("attempts").textContent=attempts;
+
+    document.getElementById("score").textContent=score;
+
+    document.getElementById("range").textContent=
+    "Guess between 1 and "+s.max;
+
+    document.getElementById("message").textContent=
+    "Enter your guess!";
+
+    document.getElementById("guess").value="";
+
+    document.getElementById("nextBtn")
+    .style.display="none";
+}
+
+function checkGuess(){
+
+    if(completed)return;
+
+    const input=
+    document.getElementById("guess");
+
+    const guess=Number(input.value);
+
+    const max=settings[level-1].max;
+
+    if(!guess||guess<1||guess>max){
+
+        document.getElementById("message")
+        .textContent=
+        "⚠️ Enter a number from 1 to "+max;
+
+        return;
+    }
+
+    attempts--;
+
+    document.getElementById("attempts")
+    .textContent=attempts;
+
+    if(guess===secret){
+
+        completed=true;
+
+        score+=
+        100+(attempts*20);
+
+        document.getElementById("score")
+        .textContent=score;
+
+        document.getElementById("message")
+        .textContent=
+        "🎉 Correct! The number was "+secret+".";
+
+        if(level<10){
+
+            document.getElementById("nextBtn")
+            .style.display="inline-block";
+
+        }else{
+
+            document.getElementById("message")
+            .textContent=
+            "🏆 Amazing! You completed all 10 levels!";
+        }
+
+    }else if(guess<secret){
+
+        document.getElementById("message")
+        .textContent=
+        "⬆️ Too low! Try a higher number.";
+
+    }else{
+
+        document.getElementById("message")
+        .textContent=
+        "⬇️ Too high! Try a lower number.";
+    }
+
+    if(attempts<=0&&!completed){
+
+        completed=true;
+
+        document.getElementById("message")
+        .textContent=
+        "❌ Out of attempts! The number was "+secret;
+    }
+}
+
+function nextLevel(){
+
+    if(level<10){
+
+        level++;
+
+        start();
+    }
+}
+
+function restart(){
+    score=0;
+    start();
+}
+
+function goHome(){
+    window.location.href="../index.html";
+}
+
+document.getElementById("guess")
+.addEventListener("keydown",e=>{
+
+    if(e.key==="Enter"){
+        checkGuess();
+    }
+
+});
+
+start();
+
+</script>
+
+</body>
+</html>

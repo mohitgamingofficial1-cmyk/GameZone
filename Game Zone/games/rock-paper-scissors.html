@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors - GameZone</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            color: #38bdf8;
+            margin-top: 25px;
+        }
+
+        .game-box {
+            width: 90%;
+            max-width: 650px;
+            margin: 20px auto;
+            padding: 25px;
+            background: #1e293b;
+            border-radius: 15px;
+        }
+
+        .info {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .choices {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+
+        .choice {
+            width: 130px;
+            height: 130px;
+            border: none;
+            border-radius: 15px;
+            background: #334155;
+            color: white;
+            font-size: 55px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .choice:hover {
+            transform: scale(1.08);
+            background: #475569;
+        }
+
+        .choice small {
+            display: block;
+            font-size: 15px;
+            margin-top: 5px;
+        }
+
+        .battle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            margin: 25px 0;
+            font-size: 20px;
+        }
+
+        .player-choice,
+        .computer-choice {
+            font-size: 65px;
+        }
+
+        .vs {
+            font-size: 25px;
+            font-weight: bold;
+            color: #facc15;
+        }
+
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+            min-height: 35px;
+            margin: 20px;
+        }
+
+        #message {
+            font-size: 17px;
+            color: #cbd5e1;
+            min-height: 25px;
+        }
+
+        button {
+            padding: 11px 18px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            background: #38bdf8;
+            color: #07111f;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #7dd3fc;
+        }
+
+        .levels {
+            margin-top: 25px;
+        }
+
+        .level-btn {
+            min-width: 90px;
+        }
+
+        button:disabled {
+            background: #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>✊ 📄 ✂️ Rock Paper Scissors</h1>
+
+    <div class="game-box">
+
+        <div class="info">
+            <div>Level: <b id="level">1</b></div>
+            <div>Score: <b id="score">0</b></div>
+            <div>Wins: <b id="wins">0</b></div>
+            <div>Round: <b id="round">0</b></div>
+        </div>
+
+        <div class="battle">
+
+            <div>
+                <div>You</div>
+                <div id="playerChoice" class="player-choice">❔</div>
+            </div>
+
+            <div class="vs">VS</div>
+
+            <div>
+                <div>Computer</div>
+                <div id="computerChoice" class="computer-choice">❔</div>
+            </div>
+
+        </div>
+
+        <div id="result">Choose your move!</div>
+
+        <div id="message">
+            Win the required rounds to complete the level.
+        </div>
+
+        <div class="choices">
+
+            <button class="choice" onclick="play('rock')">
+                ✊
+                <small>Rock</small>
+            </button>
+
+            <button class="choice" onclick="play('paper')">
+                📄
+                <small>Paper</small>
+            </button>
+
+            <button class="choice" onclick="play('scissors')">
+                ✂️
+                <small>Scissors</small>
+            </button>
+
+        </div>
+
+        <div>
+            <button onclick="restartLevel()">🔄 Restart Level</button>
+            <button onclick="goHome()">🏠 Home</button>
+            <button id="nextButton"
+                    onclick="nextLevel()"
+                    style="display:none;">
+                ▶ Next Level
+            </button>
+        </div>
+
+        <div class="levels">
+            <h3>Level Selection</h3>
+            <div id="levelButtons"></div>
+        </div>
+
+    </div>
+
+
+<script>
+
+    // =====================================
+    // GAME VARIABLES
+    // =====================================
+
+    let level = 1;
+    let score = 0;
+    let wins = 0;
+    let losses = 0;
+    let draws = 0;
+    let round = 0;
+
+    let levelCompleted = false;
+
+    let unlockedLevel =
+        Number(localStorage.getItem("rpsUnlocked")) || 1;
+
+
+    // =====================================
+    // LEVEL SETTINGS
+    // =====================================
+
+    const levelSettings = [
+
+        { rounds: 3, computerChance: 0.20 },
+        { rounds: 3, computerChance: 0.25 },
+        { rounds: 4, computerChance: 0.30 },
+        { rounds: 4, computerChance: 0.35 },
+        { rounds: 5, computerChance: 0.40 },
+        { rounds: 5, computerChance: 0.45 },
+        { rounds: 6, computerChance: 0.50 },
+        { rounds: 6, computerChance: 0.55 },
+        { rounds: 7, computerChance: 0.60 },
+        { rounds: 8, computerChance: 0.65 }
+
+    ];
+
+
+    // =====================================
+    // EMOJIS
+    // =====================================
+
+    const emoji = {
+
+        rock: "✊",
+
+        paper: "📄",
+
+        scissors: "✂️"
+
+    };
+
+
+    // =====================================
+    // COMPUTER MOVE
+    // =====================================
+
+    function computerMove(player) {
+
+        const moves = [
+            "rock",
+            "paper",
+            "scissors"
+        ];
+
+        /*
+            Higher levels give the computer
+            a better chance to counter the player.
+        */
+
+        const chance =
+            levelSettings[level - 1].computerChance;
+
+        if (Math.random() < chance) {
+
+            if (player === "rock") {
+
+                return "paper";
+
+            }
+
+            if (player === "paper") {
+
+                return "scissors";
+
+            }
+
+            if (player === "scissors") {
+
+                return "rock";
+
+            }
+
+        }
+
+        return moves[
+            Math.floor(Math.random() * moves.length)
+        ];
+    }
+
+
+    // =====================================
+    // PLAY GAME
+    // =====================================
+
+    function play(player) {
+
+        if (levelCompleted) {
+            return;
+        }
+
+        const computer =
+            computerMove(player);
+
+        round++;
+
+        document.getElementById(
+            "round"
+        ).textContent = round;
+
+        document.getElementById(
+            "playerChoice"
+        ).textContent = emoji[player];
+
+        document.getElementById(
+            "computerChoice"
+        ).textContent = emoji[computer];
+
+
+        // =================================
+        // CHECK RESULT
+        // =================================
+
+        if (player === computer) {
+
+            draws++;
+
+            document.getElementById(
+                "result"
+            ).textContent = "🤝 Draw!";
+
+            document.getElementById(
+                "message"
+            ).textContent =
+                "Try again!";
+
+        }
+
+        else if (
+
+            (player === "rock" &&
+             computer === "scissors") ||
+
+            (player === "paper" &&
+             computer === "rock") ||
+
+            (player === "scissors" &&
+             computer === "paper")
+
+        ) {
+
+            wins++;
+
+            score += 10;
+
+            document.getElementById(
+                "result"
+            ).textContent = "🎉 You Win!";
+
+            document.getElementById(
+                "message"
+            ).textContent =
+                "+10 points";
+
+        }
+
+        else {
+
+            losses++;
+
+            score = Math.max(
+                0,
+                score - 5
+            );
+
+            document.getElementById(
+                "result"
+            ).textContent =
+                "😅 Computer Wins!";
+
+            document.getElementById(
+                "message"
+            ).textContent =
+                "-5 points";
+
+        }
+
+
+        updateScore();
+
+
+        // =================================
+        // CHECK LEVEL
+        // =================================
+
+        const requiredRounds =
+            levelSettings[level - 1].rounds;
+
+
+        if (wins >= requiredRounds) {
+
+            completeLevel();
+
+        }
+
+        else if (round >= requiredRounds + 3) {
+
+            levelFailed();
+
+        }
+
+    }
+
+
+    // =====================================
+    // UPDATE SCORE
+    // =====================================
+
+    function updateScore() {
+
+        document.getElementById(
+            "score"
+        ).textContent = score;
+
+        document.getElementById(
+            "wins"
+        ).textContent = wins;
+
+    }
+
+
+    // =====================================
+    // LEVEL COMPLETE
+    // =====================================
+
+    function completeLevel() {
+
+        levelCompleted = true;
+
+        score += 50;
+
+        updateScore();
+
+        document.getElementById(
+            "result"
+        ).textContent =
+            "🏆 Level " + level + " Complete!";
+
+        document.getElementById(
+            "message"
+        ).textContent =
+            "Bonus +50 points!";
+
+        document.getElementById(
+            "nextButton"
+        ).style.display = "inline-block";
+
+
+        // Unlock next level
+
+        if (level < 10) {
+
+            if (unlockedLevel < level + 1) {
+
+                unlockedLevel =
+                    level + 1;
+
+                localStorage.setItem(
+                    "rpsUnlocked",
+                    unlockedLevel
+                );
+
+            }
+
+        }
+
+        createLevelButtons();
+
+    }
+
+
+    // =====================================
+    // LEVEL FAILED
+    // =====================================
+
+    function levelFailed() {
+
+        levelCompleted = true;
+
+        document.getElementById(
+            "result"
+        ).textContent =
+            "❌ Level Failed!";
+
+        document.getElementById(
+            "message"
+        ).textContent =
+            "You need " +
+            levelSettings[level - 1].rounds +
+            " wins. Restart and try again.";
+
+    }
+
+
+    // =====================================
+    // NEXT LEVEL
+    // =====================================
+
+    function nextLevel() {
+
+        if (level >= 10) {
+
+            document.getElementById(
+                "result"
+            ).textContent =
+                "🎊 You completed all 10 levels!";
+
+            document.getElementById(
+                "message"
+            ).textContent =
+                "🏆 GameZone Champion!";
+
+            document.getElementById(
+                "nextButton"
+            ).style.display = "none";
+
+            return;
+        }
+
+        level++;
+
+        startLevel();
+
+    }
+
+
+    // =====================================
+    // START LEVEL
+    // =====================================
+
+    function startLevel() {
+
+        score = 0;
+
+        wins = 0;
+
+        losses = 0;
+
+        draws = 0;
+
+        round = 0;
+
+        levelCompleted = false;
+
+
+        document.getElementById(
+            "level"
+        ).textContent = level;
+
+        document.getElementById(
+            "score"
+        ).textContent = score;
+
+        document.getElementById(
+            "wins"
+        ).textContent = wins;
+
+        document.getElementById(
+            "round"
+        ).textContent = round;
+
+        document.getElementById(
+            "playerChoice"
+        ).textContent = "❔";
+
+        document.getElementById(
+            "computerChoice"
+        ).textContent = "❔";
+
+        document.getElementById(
+            "result"
+        ).textContent =
+            "Choose your move!";
+
+        document.getElementById(
+            "message"
+        ).textContent =
+            "You need " +
+            levelSettings[level - 1].rounds +
+            " wins to complete Level " +
+            level + ".";
+
+        document.getElementById(
+            "nextButton"
+        ).style.display = "none";
+
+    }
+
+
+    // =====================================
+    // RESTART LEVEL
+    // =====================================
+
+    function restartLevel() {
+
+        startLevel();
+
+    }
+
+
+    // =====================================
+    // HOME
+    // =====================================
+
+    function goHome() {
+
+        window.location.href =
+            "../index.html";
+
+    }
+
+
+    // =====================================
+    // LEVEL BUTTONS
+    // =====================================
+
+    function createLevelButtons() {
+
+        const container =
+            document.getElementById(
+                "levelButtons"
+            );
+
+        container.innerHTML = "";
+
+
+        for (
+            let i = 1;
+            i <= 10;
+            i++
+        ) {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.className =
+                "level-btn";
+
+
+            if (i <= unlockedLevel) {
+
+                button.textContent =
+                    "Level " + i;
+
+                button.disabled = false;
+
+                button.onclick = function() {
+
+                    level = i;
+
+                    startLevel();
+
+                };
+
+            }
+
+            else {
+
+                button.textContent =
+                    "🔒 Level " + i;
+
+                button.disabled = true;
+
+            }
+
+            container.appendChild(button);
+
+        }
+
+    }
+
+
+    // =====================================
+    // INITIALIZE GAME
+    // =====================================
+
+    createLevelButtons();
+
+    startLevel();
+
+</script>
+
+</body>
+</html>

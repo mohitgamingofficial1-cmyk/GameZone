@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Car Dodge - GameZone</title>
+
+<style>
+body{
+    margin:0;
+    background:#111827;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
+
+h1{color:#38bdf8}
+
+#game{
+    position:relative;
+    width:360px;
+    height:600px;
+    max-width:95%;
+    margin:auto;
+    background:#374151;
+    overflow:hidden;
+    border:3px solid #38bdf8;
+    border-radius:10px;
+}
+
+.roadLine{
+    position:absolute;
+    width:8px;
+    height:60px;
+    background:white;
+    left:176px;
+}
+
+#car{
+    position:absolute;
+    width:45px;
+    height:70px;
+    background:#ef4444;
+    bottom:25px;
+    left:157px;
+    border-radius:10px;
+}
+
+.enemy{
+    position:absolute;
+    width:45px;
+    height:70px;
+    background:#facc15;
+    border-radius:10px;
+}
+
+.info{
+    display:flex;
+    justify-content:center;
+    gap:25px;
+    margin:15px;
+    font-size:18px;
+}
+
+button{
+    padding:10px 17px;
+    margin:5px;
+    border:0;
+    border-radius:8px;
+    background:#38bdf8;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#message{
+    min-height:30px;
+    font-size:19px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🚗 Car Dodge</h1>
+
+<div class="info">
+    <div>Level: <b id="level">1</b></div>
+    <div>Score: <b id="score">0</b></div>
+    <div>Lives: <b id="lives">3</b></div>
+</div>
+
+<div id="game">
+    <div id="car"></div>
+</div>
+
+<div id="message">Use ← → to dodge the cars!</div>
+
+<button onclick="restart()">🔄 Restart</button>
+<button onclick="goHome()">🏠 Home</button>
+<button id="nextBtn" onclick="nextLevel()" style="display:none">
+▶ Next Level
+</button>
+
+<script>
+
+const game=document.getElementById("game");
+const car=document.getElementById("car");
+
+let level=1;
+let score=0;
+let lives=3;
+let enemies=[];
+let running=true;
+let animation;
+
+const settings=[
+ {speed:3,target:100},
+ {speed:3.5,target:150},
+ {speed:4,target:200},
+ {speed:4.5,target:250},
+ {speed:5,target:300},
+ {speed:5.5,target:350},
+ {speed:6,target:400},
+ {speed:6.5,target:450},
+ {speed:7,target:500},
+ {speed:8,target:600}
+];
+
+let keys={};
+
+document.addEventListener("keydown",e=>{
+    keys[e.key]=true;
+
+    if(
+        e.key==="ArrowLeft"||
+        e.key==="ArrowRight"
+    )e.preventDefault();
+});
+
+document.addEventListener("keyup",e=>{
+    keys[e.key]=false;
+});
+
+function start(){
+
+    running=true;
+    lives=3;
+    score=0;
+    enemies=[];
+
+    document.getElementById("level").textContent=level;
+    document.getElementById("score").textContent=score;
+    document.getElementById("lives").textContent=lives;
+    document.getElementById("nextBtn").style.display="none";
+
+    document.querySelectorAll(".enemy").forEach(e=>e.remove());
+
+    car.style.left="157px";
+
+    document.getElementById("message").textContent=
+    "Reach "+settings[level-1].target+" points!";
+
+    cancelAnimationFrame(animation);
+
+    loop();
+}
+
+function createEnemy(){
+
+    const enemy=document.createElement("div");
+
+    enemy.className="enemy";
+
+    enemy.style.left=
+    Math.floor(Math.random()*315)+"px";
+
+    enemy.style.top="-80px";
+
+    game.appendChild(enemy);
+
+    enemies.push({
+        element:enemy,
+        x:parseInt(enemy.style.left),
+        y:-80
+    });
+}
+
+let frame=0;
+
+function loop(){
+
+    if(!running)return;
+
+    frame++;
+
+    let x=parseInt(car.style.left)||157;
+
+    if(keys["ArrowLeft"])x-=6;
+    if(keys["ArrowRight"])x+=6;
+
+    x=Math.max(0,Math.min(315,x));
+
+    car.style.left=x+"px";
+
+    if(frame%80===0){
+        createEnemy();
+    }
+
+    enemies.forEach(enemy=>{
+
+        enemy.y+=settings[level-1].speed;
+
+        enemy.element.style.top=
+        enemy.y+"px";
+
+        if(
+            enemy.y>600
+        ){
+
+            score+=10;
+
+            enemy.element.remove();
+
+        }
+
+        if(collision(car,enemy.element)){
+
+            enemy.element.remove();
+
+            enemy.y=700;
+
+            lives--;
+
+            document.getElementById("lives")
+            .textContent=lives;
+
+            if(lives<=0){
+
+                gameOver();
+            }
+        }
+
+    });
+
+    enemies=enemies.filter(e=>e.y<650);
+
+    document.getElementById("score").textContent=score;
+
+    if(score>=settings[level-1].target){
+
+        completeLevel();
+
+        return;
+    }
+
+    animation=requestAnimationFrame(loop);
+}
+
+function collision(a,b){
+
+    const ar=a.getBoundingClientRect();
+    const br=b.getBoundingClientRect();
+
+    return !(
+        ar.right<br.left||
+        ar.left>br.right||
+        ar.bottom<br.top||
+        ar.top>br.bottom
+    );
+}
+
+function completeLevel(){
+
+    running=false;
+
+    document.getElementById("message").textContent=
+    "🏆 Level "+level+" Complete!";
+
+    if(level<10){
+
+        document.getElementById("nextBtn")
+        .style.display="inline-block";
+
+    }else{
+
+        document.getElementById("message").textContent=
+        "🎉 You completed all 10 levels!";
+    }
+}
+
+function gameOver(){
+
+    running=false;
+
+    document.getElementById("message").textContent=
+    "💥 Game Over! Restart and try again.";
+}
+
+function nextLevel(){
+
+    if(level<10){
+
+        level++;
+        start();
+    }
+}
+
+function restart(){
+    start();
+}
+
+function goHome(){
+    window.location.href="../index.html";
+}
+
+start();
+
+</script>
+
+</body>
+</html>

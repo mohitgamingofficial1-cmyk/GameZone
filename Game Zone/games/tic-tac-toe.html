@@ -1,0 +1,1224 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe - 10 Levels</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0b1020;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-container {
+    width: 95%;
+    max-width: 500px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.level-box {
+    background: #151d35;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.level-title {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.level-name {
+    color: #00e5ff;
+    margin-top: 5px;
+}
+
+.progress {
+    width: 100%;
+    height: 8px;
+    background: #252d45;
+    border-radius: 10px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 10%;
+    background: #00e5ff;
+    transition: 0.4s;
+}
+
+.score {
+    display: flex;
+    justify-content: space-around;
+    margin: 15px 0;
+    background: #151d35;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.score div {
+    font-size: 16px;
+}
+
+.score span {
+    display: block;
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.board {
+    width: 330px;
+    height: 330px;
+    max-width: 90vw;
+    max-height: 90vw;
+    margin: 20px auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.cell {
+    background: #151d35;
+    border: 2px solid #293453;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 65px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.cell:hover {
+    background: #202b4b;
+}
+
+.cell.x {
+    color: #00e5ff;
+}
+
+.cell.o {
+    color: #ff4fd8;
+}
+
+.cell.winner {
+    background: #263c50;
+    border-color: #00e5ff;
+}
+
+.message {
+    min-height: 30px;
+    font-size: 18px;
+    margin: 10px 0;
+    color: #ddd;
+}
+
+button {
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 5px;
+}
+
+.new-game {
+    background: #00e5ff;
+    color: #071018;
+}
+
+.next-level {
+    background: #ff4fd8;
+    color: white;
+    display: none;
+}
+
+.home {
+    background: #293453;
+    color: white;
+}
+
+button:hover {
+    transform: scale(1.04);
+}
+
+.level-select {
+    margin: 10px 0;
+}
+
+select {
+    padding: 8px 15px;
+    border-radius: 7px;
+    background: #151d35;
+    color: white;
+    border: 1px solid #394565;
+}
+
+.lock-info {
+    font-size: 13px;
+    color: #999;
+    margin-top: 7px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game-container">
+
+    <h1>❌ Tic Tac Toe ⭕</h1>
+    <p class="subtitle">Beat the computer and complete all 10 levels!</p>
+
+    <div class="level-box">
+        <div class="level-title">
+            Level <span id="levelNumber">1</span> / 10
+        </div>
+
+        <div class="level-name" id="levelName">
+            Easy
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="lock-info" id="lockInfo">
+            Win to unlock the next level
+        </div>
+    </div>
+
+    <div class="score">
+        <div>
+            You
+            <span id="playerScore">0</span>
+        </div>
+
+        <div>
+            Draw
+            <span id="drawScore">0</span>
+        </div>
+
+        <div>
+            Computer
+            <span id="computerScore">0</span>
+        </div>
+    </div>
+
+    <div class="level-select">
+        <label>Level: </label>
+
+        <select id="levelSelect" onchange="changeLevel()">
+            <option value="1">Level 1 - Easy</option>
+            <option value="2" disabled>Level 2 - Easy+</option>
+            <option value="3" disabled>Level 3 - Normal</option>
+            <option value="4" disabled>Level 4 - Normal+</option>
+            <option value="5" disabled>Level 5 - Hard</option>
+            <option value="6" disabled>Level 6 - Hard+</option>
+            <option value="7" disabled>Level 7 - Expert</option>
+            <option value="8" disabled>Level 8 - Expert+</option>
+            <option value="9" disabled>Level 9 - Master</option>
+            <option value="10" disabled>Level 10 - Ultimate</option>
+        </select>
+    </div>
+
+    <div class="board" id="board"></div>
+
+    <div class="message" id="message">
+        Your turn — you are X
+    </div>
+
+    <button class="new-game" onclick="newGame()">
+        🔄 New Game
+    </button>
+
+    <button class="next-level" id="nextLevelBtn" onclick="nextLevel()">
+        ▶ Next Level
+    </button>
+
+    <br>
+
+    <button class="home" onclick="goHome()">
+        🏠 Home
+    </button>
+
+</div>
+
+<script>
+
+const levelNames = [
+    "",
+    "Easy",
+    "Easy+",
+    "Normal",
+    "Normal+",
+    "Hard",
+    "Hard+",
+    "Expert",
+    "Expert+",
+    "Master",
+    "Ultimate"
+];
+
+let currentLevel = 1;
+
+let board = [
+    "", "", "",
+    "", "", "",
+    "", "", ""
+];
+
+let gameOver = false;
+let playerScore = 0;
+let computerScore = 0;
+let drawScore = 0;
+
+const player = "X";
+const computer = "O";
+
+const winningPatterns = [
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+
+    [0,4,8],
+    [2,4,6]
+];
+
+
+// -----------------------------
+// LEVEL DATA
+// -----------------------------
+
+function getLevelDescription(level) {
+
+    switch(level) {
+
+        case 1:
+            return "Computer plays randomly";
+
+        case 2:
+            return "Computer prefers good positions";
+
+        case 3:
+            return "Computer looks for winning moves";
+
+        case 4:
+            return "Computer blocks your winning moves";
+
+        case 5:
+            return "Computer uses basic strategy";
+
+        case 6:
+            return "Computer controls center and corners";
+
+        case 7:
+            return "Computer plays very carefully";
+
+        case 8:
+            return "Computer makes very few mistakes";
+
+        case 9:
+            return "Master AI";
+
+        case 10:
+            return "Ultimate AI - Unbeatable";
+
+        default:
+            return "";
+    }
+}
+
+
+// -----------------------------
+// CREATE BOARD
+// -----------------------------
+
+function createBoard() {
+
+    const boardElement = document.getElementById("board");
+
+    boardElement.innerHTML = "";
+
+    for(let i = 0; i < 9; i++) {
+
+        const cell = document.createElement("div");
+
+        cell.classList.add("cell");
+
+        cell.dataset.index = i;
+
+        cell.addEventListener("click", function() {
+            playerMove(i);
+        });
+
+        boardElement.appendChild(cell);
+    }
+
+    updateBoard();
+}
+
+
+// -----------------------------
+// DISPLAY BOARD
+// -----------------------------
+
+function updateBoard() {
+
+    const cells = document.querySelectorAll(".cell");
+
+    cells.forEach((cell, index) => {
+
+        cell.textContent = board[index];
+
+        cell.classList.remove("x");
+        cell.classList.remove("o");
+
+        if(board[index] === "X") {
+            cell.classList.add("x");
+        }
+
+        if(board[index] === "O") {
+            cell.classList.add("o");
+        }
+    });
+}
+
+
+// -----------------------------
+// PLAYER MOVE
+// -----------------------------
+
+function playerMove(index) {
+
+    if(gameOver) return;
+
+    if(board[index] !== "") return;
+
+    board[index] = player;
+
+    updateBoard();
+
+    const result = checkWinner(board);
+
+    if(result) {
+
+        finishGame(result);
+
+        return;
+    }
+
+    document.getElementById("message").textContent =
+        "Computer is thinking...";
+
+    setTimeout(computerMove, 400);
+}
+
+
+// -----------------------------
+// COMPUTER MOVE
+// -----------------------------
+
+function computerMove() {
+
+    if(gameOver) return;
+
+    let move;
+
+    switch(currentLevel) {
+
+        case 1:
+            move = randomMove();
+            break;
+
+        case 2:
+            move = level2Move();
+            break;
+
+        case 3:
+            move = level3Move();
+            break;
+
+        case 4:
+            move = level4Move();
+            break;
+
+        case 5:
+            move = level5Move();
+            break;
+
+        case 6:
+            move = level6Move();
+            break;
+
+        case 7:
+            move = level7Move();
+            break;
+
+        case 8:
+            move = level8Move();
+            break;
+
+        case 9:
+            move = level9Move();
+            break;
+
+        case 10:
+            move = bestMove();
+            break;
+    }
+
+    if(move !== undefined && move !== null) {
+
+        board[move] = computer;
+
+        updateBoard();
+    }
+
+    const result = checkWinner(board);
+
+    if(result) {
+
+        finishGame(result);
+
+        return;
+    }
+
+    document.getElementById("message").textContent =
+        "Your turn — you are X";
+}
+
+
+// -----------------------------
+// LEVEL 1
+// RANDOM
+// -----------------------------
+
+function randomMove() {
+
+    const empty = getEmptyCells();
+
+    return empty[Math.floor(Math.random() * empty.length)];
+}
+
+
+// -----------------------------
+// LEVEL 2
+// GOOD POSITION
+// -----------------------------
+
+function level2Move() {
+
+    const empty = getEmptyCells();
+
+    if(empty.includes(4)) {
+        return 4;
+    }
+
+    return randomMove();
+}
+
+
+// -----------------------------
+// LEVEL 3
+// WINNING MOVE
+// -----------------------------
+
+function level3Move() {
+
+    const win = findWinningMove(computer);
+
+    if(win !== null) {
+        return win;
+    }
+
+    return randomMove();
+}
+
+
+// -----------------------------
+// LEVEL 4
+// WIN + BLOCK
+// -----------------------------
+
+function level4Move() {
+
+    const win = findWinningMove(computer);
+
+    if(win !== null) {
+        return win;
+    }
+
+    const block = findWinningMove(player);
+
+    if(block !== null) {
+        return block;
+    }
+
+    return randomMove();
+}
+
+
+// -----------------------------
+// LEVEL 5
+// BASIC STRATEGY
+// -----------------------------
+
+function level5Move() {
+
+    const win = findWinningMove(computer);
+
+    if(win !== null) return win;
+
+    const block = findWinningMove(player);
+
+    if(block !== null) return block;
+
+    if(board[4] === "") {
+        return 4;
+    }
+
+    const corners = [0,2,6,8]
+        .filter(i => board[i] === "");
+
+    if(corners.length > 0) {
+
+        return corners[
+            Math.floor(Math.random() * corners.length)
+        ];
+    }
+
+    return randomMove();
+}
+
+
+// -----------------------------
+// LEVEL 6
+// CENTER + CORNERS
+// -----------------------------
+
+function level6Move() {
+
+    const win = findWinningMove(computer);
+
+    if(win !== null) return win;
+
+    const block = findWinningMove(player);
+
+    if(block !== null) return block;
+
+    if(board[4] === "") {
+        return 4;
+    }
+
+    const corners = [0,2,6,8]
+        .filter(i => board[i] === "");
+
+    if(corners.length > 0) {
+
+        return corners[
+            Math.floor(Math.random() * corners.length)
+        ];
+    }
+
+    return randomMove();
+}
+
+
+// -----------------------------
+// LEVEL 7
+// STRATEGIC
+// -----------------------------
+
+function level7Move() {
+
+    const win = findWinningMove(computer);
+
+    if(win !== null) return win;
+
+    const block = findWinningMove(player);
+
+    if(block !== null) return block;
+
+    const fork = findFork(computer);
+
+    if(fork !== null) return fork;
+
+    if(board[4] === "") {
+        return 4;
+    }
+
+    const corners = [0,2,6,8]
+        .filter(i => board[i] === "");
+
+    if(corners.length > 0) {
+
+        return corners[0];
+    }
+
+    return randomMove();
+}
+
+
+// -----------------------------
+// LEVEL 8
+// STRONG STRATEGY
+// -----------------------------
+
+function level8Move() {
+
+    const win = findWinningMove(computer);
+
+    if(win !== null) return win;
+
+    const block = findWinningMove(player);
+
+    if(block !== null) return block;
+
+    const fork = findFork(computer);
+
+    if(fork !== null) return fork;
+
+    const playerFork = findFork(player);
+
+    if(playerFork !== null) return playerFork;
+
+    if(board[4] === "") {
+        return 4;
+    }
+
+    const corners = [0,2,6,8]
+        .filter(i => board[i] === "");
+
+    if(corners.length > 0) {
+
+        return corners[
+            Math.floor(Math.random() * corners.length)
+        ];
+    }
+
+    return randomMove();
+}
+
+
+// -----------------------------
+// LEVEL 9
+// MASTER
+// -----------------------------
+
+function level9Move() {
+
+    return bestMove();
+}
+
+
+// -----------------------------
+// LEVEL 10
+// MINIMAX
+// UNBEATABLE
+// -----------------------------
+
+function bestMove() {
+
+    let bestScore = -Infinity;
+
+    let move;
+
+    for(let i = 0; i < 9; i++) {
+
+        if(board[i] === "") {
+
+            board[i] = computer;
+
+            let score = minimax(
+                board,
+                0,
+                false
+            );
+
+            board[i] = "";
+
+            if(score > bestScore) {
+
+                bestScore = score;
+
+                move = i;
+            }
+        }
+    }
+
+    return move;
+}
+
+
+function minimax(position, depth, isMaximizing) {
+
+    const result = checkWinner(position);
+
+    if(result === computer) {
+        return 10 - depth;
+    }
+
+    if(result === player) {
+        return depth - 10;
+    }
+
+    if(result === "draw") {
+        return 0;
+    }
+
+
+    if(isMaximizing) {
+
+        let bestScore = -Infinity;
+
+        for(let i = 0; i < 9; i++) {
+
+            if(position[i] === "") {
+
+                position[i] = computer;
+
+                let score = minimax(
+                    position,
+                    depth + 1,
+                    false
+                );
+
+                position[i] = "";
+
+                bestScore = Math.max(
+                    bestScore,
+                    score
+                );
+            }
+        }
+
+        return bestScore;
+
+    } else {
+
+        let bestScore = Infinity;
+
+        for(let i = 0; i < 9; i++) {
+
+            if(position[i] === "") {
+
+                position[i] = player;
+
+                let score = minimax(
+                    position,
+                    depth + 1,
+                    true
+                );
+
+                position[i] = "";
+
+                bestScore = Math.min(
+                    bestScore,
+                    score
+                );
+            }
+        }
+
+        return bestScore;
+    }
+}
+
+
+// -----------------------------
+// FIND WINNING MOVE
+// -----------------------------
+
+function findWinningMove(symbol) {
+
+    for(let i = 0; i < 9; i++) {
+
+        if(board[i] === "") {
+
+            board[i] = symbol;
+
+            const result = checkWinner(board);
+
+            board[i] = "";
+
+            if(result === symbol) {
+
+                return i;
+            }
+        }
+    }
+
+    return null;
+}
+
+
+// -----------------------------
+// FIND FORK
+// -----------------------------
+
+function findFork(symbol) {
+
+    const empty = getEmptyCells();
+
+    for(let move of empty) {
+
+        board[move] = symbol;
+
+        let winningChances = 0;
+
+        for(let i = 0; i < 9; i++) {
+
+            if(board[i] === "") {
+
+                board[i] = symbol;
+
+                if(checkWinner(board) === symbol) {
+
+                    winningChances++;
+                }
+
+                board[i] = "";
+            }
+        }
+
+        board[move] = "";
+
+        if(winningChances >= 2) {
+
+            return move;
+        }
+    }
+
+    return null;
+}
+
+
+// -----------------------------
+// EMPTY CELLS
+// -----------------------------
+
+function getEmptyCells() {
+
+    return board
+        .map((value,index) =>
+            value === "" ? index : null
+        )
+        .filter(index => index !== null);
+}
+
+
+// -----------------------------
+// CHECK WINNER
+// -----------------------------
+
+function checkWinner(position) {
+
+    for(let pattern of winningPatterns) {
+
+        const [a,b,c] = pattern;
+
+        if(
+            position[a] !== "" &&
+            position[a] === position[b] &&
+            position[a] === position[c]
+        ) {
+
+            return position[a];
+        }
+    }
+
+    if(!position.includes("")) {
+
+        return "draw";
+    }
+
+    return null;
+}
+
+
+// -----------------------------
+// FINISH GAME
+// -----------------------------
+
+function finishGame(result) {
+
+    gameOver = true;
+
+    if(result === player) {
+
+        playerScore++;
+
+        document.getElementById("playerScore").textContent =
+            playerScore;
+
+        document.getElementById("message").textContent =
+            "🎉 You Win!";
+
+        highlightWinner(player);
+
+        unlockNextLevel();
+
+    } else if(result === computer) {
+
+        computerScore++;
+
+        document.getElementById("computerScore").textContent =
+            computerScore;
+
+        document.getElementById("message").textContent =
+            "🤖 Computer Wins! Try again.";
+
+    } else {
+
+        drawScore++;
+
+        document.getElementById("drawScore").textContent =
+            drawScore;
+
+        document.getElementById("message").textContent =
+            "🤝 Draw!";
+
+    }
+}
+
+
+// -----------------------------
+// HIGHLIGHT WINNER
+// -----------------------------
+
+function highlightWinner(symbol) {
+
+    const cells = document.querySelectorAll(".cell");
+
+    for(let pattern of winningPatterns) {
+
+        const [a,b,c] = pattern;
+
+        if(
+            board[a] === symbol &&
+            board[b] === symbol &&
+            board[c] === symbol
+        ) {
+
+            cells[a].classList.add("winner");
+            cells[b].classList.add("winner");
+            cells[c].classList.add("winner");
+
+            break;
+        }
+    }
+}
+
+
+// -----------------------------
+// UNLOCK LEVEL
+// -----------------------------
+
+function unlockNextLevel() {
+
+    if(currentLevel >= 10) {
+
+        document.getElementById("message").textContent =
+            "🏆 AMAZING! You completed all 10 levels!";
+
+        document.getElementById("lockInfo").textContent =
+            "All levels completed!";
+
+        return;
+    }
+
+    const next = currentLevel + 1;
+
+    const select =
+        document.getElementById("levelSelect");
+
+    select.options[next - 1].disabled = false;
+
+    document.getElementById("nextLevelBtn").style.display =
+        "inline-block";
+
+    document.getElementById("lockInfo").textContent =
+        "Level " + next + " unlocked!";
+
+    saveProgress();
+}
+
+
+// -----------------------------
+// NEXT LEVEL
+// -----------------------------
+
+function nextLevel() {
+
+    if(currentLevel >= 10) return;
+
+    currentLevel++;
+
+    document.getElementById("levelSelect").value =
+        currentLevel;
+
+    updateLevelUI();
+
+    newGame();
+}
+
+
+// -----------------------------
+// CHANGE LEVEL
+// -----------------------------
+
+function changeLevel() {
+
+    const selected =
+        Number(document.getElementById("levelSelect").value);
+
+    currentLevel = selected;
+
+    updateLevelUI();
+
+    newGame();
+}
+
+
+// -----------------------------
+// LEVEL UI
+// -----------------------------
+
+function updateLevelUI() {
+
+    document.getElementById("levelNumber").textContent =
+        currentLevel;
+
+    document.getElementById("levelName").textContent =
+        levelNames[currentLevel];
+
+    document.getElementById("progressBar").style.width =
+        (currentLevel * 10) + "%";
+
+    document.getElementById("lockInfo").textContent =
+        getLevelDescription(currentLevel);
+
+    document.getElementById("nextLevelBtn").style.display =
+        "none";
+}
+
+
+// -----------------------------
+// NEW GAME
+// -----------------------------
+
+function newGame() {
+
+    board = [
+        "", "", "",
+        "", "", "",
+        "", "", ""
+    ];
+
+    gameOver = false;
+
+    document.getElementById("message").textContent =
+        "Your turn — you are X";
+
+    createBoard();
+
+    updateLevelUI();
+}
+
+
+// -----------------------------
+// SAVE PROGRESS
+// -----------------------------
+
+function saveProgress() {
+
+    localStorage.setItem(
+        "ticTacToeLevel",
+        currentLevel
+    );
+}
+
+
+// -----------------------------
+// LOAD PROGRESS
+// -----------------------------
+
+function loadProgress() {
+
+    const saved =
+        Number(localStorage.getItem("ticTacToeLevel"));
+
+    if(saved >= 1 && saved <= 10) {
+
+        for(let i = 2; i <= saved; i++) {
+
+            document.getElementById(
+                "levelSelect"
+            ).options[i - 1].disabled = false;
+        }
+
+        currentLevel = saved;
+
+        document.getElementById(
+            "levelSelect"
+        ).value = saved;
+    }
+}
+
+
+// -----------------------------
+// HOME
+// -----------------------------
+
+function goHome() {
+
+    window.location.href = "../index.html";
+}
+
+
+// -----------------------------
+// START
+// -----------------------------
+
+loadProgress();
+
+updateLevelUI();
+
+createBoard();
+
+</script>
+
+</body>
+</html>
+```
